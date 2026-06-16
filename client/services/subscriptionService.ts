@@ -1,6 +1,13 @@
 import { SubscriptionStatusResponse, SubscriberDetails, APIParams } from '../../shared/api';
 
-const BASE_URL = 'http://142.93.209.116/adpoke/cnt';
+// Use HTTPS for production, HTTP for localhost
+const getBaseUrl = () => {
+  if (window.location.protocol === 'https:') {
+    return 'https://142.93.209.116/adpoke/cnt';
+  }
+  return 'http://142.93.209.116/adpoke/cnt';
+};
+
 const PRODUCTCODE = 'ZIQGP';
 
 class SubscriptionService {
@@ -14,7 +21,7 @@ class SubscriptionService {
 
   async checkStatus(): Promise<SubscriptionStatusResponse> {
     const { subid, productcode } = this.getParams();
-    const url = `${BASE_URL}/sub/status?subid=${subid}&productcode=${productcode}`;
+    const url = `${getBaseUrl()}/sub/status?subid=${subid}&productcode=${productcode}`;
     console.log('📡 Status API Call:', url);
     
     try {
@@ -39,7 +46,7 @@ class SubscriptionService {
   }
 
   async checkStatusWithPhone(phoneNumber: string): Promise<SubscriptionStatusResponse> {
-    const url = `${BASE_URL}/sub/status?subid=${phoneNumber}&productcode=${PRODUCTCODE}`;
+    const url = `${getBaseUrl()}/sub/status?subid=${phoneNumber}&productcode=${PRODUCTCODE}`;
     console.log('📡 Status API Call with Phone:', url);
     
     try {
@@ -65,7 +72,7 @@ class SubscriptionService {
 
   async getSubscriberDetails(): Promise<SubscriberDetails> {
     const { subid, productcode } = this.getParams();
-    const url = `${BASE_URL}/sub/detail?subid=${subid}&productcode=${productcode}`;
+    const url = `${getBaseUrl()}/sub/detail?subid=${subid}&productcode=${productcode}`;
     console.log('📡 Details API Call:', url);
     
     try {
@@ -97,7 +104,7 @@ class SubscriptionService {
 
   getCampaignUrl(): string {
     const { subid, productcode } = this.getParams();
-    const url = `${BASE_URL}/act?subid=${subid}&productcode=${productcode}`;
+    const url = `${getBaseUrl()}/act?subid=${subid}&productcode=${productcode}`;
     console.log('🚀 Campaign URL:', url);
     return url;
   }
@@ -105,14 +112,14 @@ class SubscriptionService {
   getCampaignUrlForPhone(phoneNumber: string): string {
     const urlParams = new URLSearchParams(window.location.search);
     const productcode = urlParams.get('productcode') || PRODUCTCODE;
-    const url = `${BASE_URL}/act?subid=${phoneNumber}&productcode=${productcode}`;
+    const url = `${getBaseUrl()}/act?subid=${phoneNumber}&productcode=${productcode}`;
     console.log('🚀 Campaign URL for Phone:', url);
     return url;
   }
 
   getUnsubscribeUrl(): string {
     const { subid, productcode } = this.getParams();
-    const url = `${BASE_URL}/dct?subid=${subid}&productcode=${productcode}`;
+    const url = `${getBaseUrl()}/dct?subid=${subid}&productcode=${productcode}`;
     console.log('🔗 Unsubscribe URL:', url);
     return url;
   }
@@ -138,7 +145,7 @@ class SubscriptionService {
 
   async unsubscribe(): Promise<void> {
     const { subid, productcode } = this.getParams();
-    const url = `${BASE_URL}/dct?subid=${subid}&productcode=${productcode}`;
+    const url = `${getBaseUrl()}/dct?subid=${subid}&productcode=${productcode}`;
     console.log('📡 Unsubscribe API Call:', url);
     
     try {

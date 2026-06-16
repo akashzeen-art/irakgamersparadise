@@ -6,9 +6,9 @@ echo "🎮 Gamers Paradise - SSH Server Deployment"
 echo "=========================================="
 
 # Configuration
-SERVER_HOST="gamersparadise.fun"
-SERVER_USER="your-username"  # Replace with your SSH username
-SERVER_PATH="/path/to/gamersparadisirak"  # Replace with your server path
+SERVER_HOST="142.93.209.116"
+SERVER_USER="root"  # Replace with your actual SSH username
+SERVER_PATH="/var/www/vasnumero/gamersparadisirak"
 LOCAL_BUILD_DIR="dist"
 
 # Build the project
