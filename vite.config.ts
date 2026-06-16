@@ -17,17 +17,8 @@ export default defineConfig(({ mode }) => ({
     outDir: "dist",
     assetsDir: "assets",
     sourcemap: false,
-    minify: "terser",
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          animations: ['framer-motion'],
-          icons: ['react-icons']
-        }
-      }
-    }
+    minify: "esbuild",
+    chunkSizeWarningLimit: 1600,
   },
   plugins: [react(), ...(mode === 'development' ? [expressPlugin()] : [])],
   resolve: {
