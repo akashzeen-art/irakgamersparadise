@@ -5,6 +5,10 @@
   "installCommand": "npm install",
   "rewrites": [
     {
+      "source": "/api/subscription/:path*",
+      "destination": "/api/subscription/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

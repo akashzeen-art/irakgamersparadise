@@ -47,3 +47,12 @@ export function isSubscribedStatus(status: string | number | undefined): boolean
 export function parseSubscriptionStatus(data: { status?: string | number }): 0 | 1 {
   return isSubscribedStatus(data.status) ? 1 : 0;
 }
+
+/** Iraqi MSISDN for API subid — local digits only (e.g. 7876143154) */
+export function formatPhoneForSubid(input: string): string {
+  let digits = input.replace(/\D/g, '').replace(/^0+/, '');
+  if (digits.startsWith('964')) {
+    digits = digits.slice(3);
+  }
+  return digits;
+}

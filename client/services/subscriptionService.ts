@@ -10,6 +10,7 @@ import {
   SubscriptionStatusResponse,
   isSubscribedStatus,
   parseSubscriptionStatus,
+  formatPhoneForSubid,
 } from '../../shared/api';
 
 class SubscriptionService {
@@ -151,7 +152,19 @@ class SubscriptionService {
   }
 
   async checkStatusWithPhone(phoneNumber: string): Promise<SubscriptionStatusResponse> {
-    return this.checkStatus(phoneNumber);
+    const localSubid = formatPhoneForSubid(phoneNumber);
+    const intlSubid = `964${localSubid}`;
+
+    const localResult = await this.checkStatus(localSubid);
+    if (localResult.status === 1) {
+      return localResult;
+    }
+
+    if (intlSubid !== localSubid) {
+      return this.checkStatus(intlSubid);
+    }
+
+    return localResult;
   }
 
   async hasActiveSubscription(): Promise<boolean> {

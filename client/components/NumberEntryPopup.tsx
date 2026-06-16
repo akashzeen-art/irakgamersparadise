@@ -3,13 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
 import { useI18n } from '../lib/i18n';
 import { subscriptionService } from '../services/subscriptionService';
+import { formatPhoneForSubid } from '../../shared/api';
 
 const COUNTRY_CODE = '964';
-
-function formatPhoneWithCountryCode(localNumber: string): string {
-  const digits = localNumber.replace(/\D/g, '').replace(/^0+/, '');
-  return `${COUNTRY_CODE}${digits}`;
-}
 
 interface NumberEntryPopupProps {
   isOpen: boolean;
@@ -33,18 +29,18 @@ export function NumberEntryPopup({ isOpen, onClose, onSuccess, gameTitle }: Numb
       return;
     }
 
-    const fullPhoneNumber = formatPhoneWithCountryCode(phoneNumber);
+    const subid = formatPhoneForSubid(phoneNumber);
 
     setIsChecking(true);
     setError('');
 
     try {
-      const status = await subscriptionService.checkStatusWithPhone(fullPhoneNumber);
+      const status = await subscriptionService.checkStatusWithPhone(subid);
       
       if (status.status === 1) {
         console.log('✅ Subscription verified - access granted');
         const { productcode } = subscriptionService.getParams();
-        const outcome = subscriptionService.handleActiveSubscription(fullPhoneNumber, productcode);
+        const outcome = subscriptionService.handleActiveSubscription(subid, productcode);
         if (outcome === 'granted') {
           onSuccess();
           onClose();
@@ -52,7 +48,7 @@ export function NumberEntryPopup({ isOpen, onClose, onSuccess, gameTitle }: Numb
         return;
       } else {
         console.log('❌ Not subscribed - redirecting to campaign');
-        window.location.href = subscriptionService.getCampaignUrlForPhone(fullPhoneNumber);
+        window.location.href = subscriptionService.getCampaignUrlForPhone(subid);
       }
     } catch (error) {
       console.error('🚨 Subscription check failed:', error);
