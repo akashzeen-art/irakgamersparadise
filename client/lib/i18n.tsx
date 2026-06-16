@@ -76,6 +76,12 @@ export const translations = {
     redirectingToSubscription: 'Redirecting to subscription...',
     loadingAccountDetails: 'Loading account details...',
     unableToLoadAccount: 'Unable to load account details',
+    // Number Entry Popup
+    enterPhoneNumber: 'Enter Phone Number',
+    enterPhoneToPlay: 'Enter your phone number to play this game',
+    checking: 'Checking...',
+    subscriptionRequired: 'Subscription required to play games',
+    playRandomGame: 'Play Random Game',
     // Typewriter words
     words: ['Action', 'Puzzle', 'Arcade', 'Racing', 'Adventure'],
     // Preloader
@@ -150,6 +156,12 @@ export const translations = {
     redirectingToSubscription: 'جارٍ التوجيه إلى صفحة الاشتراك...',
     loadingAccountDetails: 'جارٍ تحميل تفاصيل الحساب...',
     unableToLoadAccount: 'غير قادر على تحميل تفاصيل الحساب',
+    // Number Entry Popup
+    enterPhoneNumber: 'أدخل رقم الهاتف',
+    enterPhoneToPlay: 'أدخل رقم هاتفك لتشغيل هذه اللعبة',
+    checking: 'جارٍ الفحص...',
+    subscriptionRequired: 'يتطلب اشتراك لتشغيل الألعاب',
+    playRandomGame: 'العب لعبة عشوائية',
     // Typewriter words
     words: ['أكشن', 'ألغاز', 'أركيد', 'سباقات', 'مغامرات'],
     // Preloader

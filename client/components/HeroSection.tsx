@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useI18n } from '../lib/i18n';
+import { NumberEntryPopup } from './NumberEntryPopup';
+import { GameModal } from './GameModal';
+import { GAMES } from '../data/games';
 
 interface HeroSectionProps {
   onPlayClick?: () => void;
@@ -17,6 +20,9 @@ export function HeroSection({ onPlayClick }: HeroSectionProps) {
   const [wordIndex, setWordIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [showNumberPopup, setShowNumberPopup] = useState(false);
+  const [showGameModal, setShowGameModal] = useState(false);
+  const [selectedGame, setSelectedGame] = useState(GAMES[0]); // Default to first game
   const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useI18n();
   const WORDS = t('words') as string[];
@@ -37,6 +43,24 @@ export function HeroSection({ onPlayClick }: HeroSectionProps) {
     }
     return () => clearTimeout(timeout);
   }, [displayed, deleting, wordIndex]);
+
+  const handlePlayNowClick = () => {
+    console.log('🎮 Play Now clicked from Hero');
+    setShowNumberPopup(true);
+  };
+
+  const handleBrowseGamesClick = () => {
+    // Browse Games can still scroll to games section
+    onPlayClick?.();
+  };
+
+  const handleSubscriptionSuccess = () => {
+    // User is subscribed - open a random featured game
+    const featuredGames = GAMES.filter(g => g.featured);
+    const randomGame = featuredGames[Math.floor(Math.random() * featuredGames.length)] || GAMES[0];
+    setSelectedGame(randomGame);
+    setShowGameModal(true);
+  };
 
   return (
     <div
@@ -184,7 +208,7 @@ export function HeroSection({ onPlayClick }: HeroSectionProps) {
           <motion.button
             whileHover={{ scale: 1.07, boxShadow: '0 0 40px rgba(168,85,247,0.8)' }}
             whileTap={{ scale: 0.95 }}
-            onClick={onPlayClick}
+            onClick={handlePlayNowClick}
             className="relative px-10 py-4 text-white font-bold text-lg rounded-xl overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)' }}
           >
@@ -194,7 +218,7 @@ export function HeroSection({ onPlayClick }: HeroSectionProps) {
           <motion.button
             whileHover={{ scale: 1.07, borderColor: '#06b6d4', color: '#06b6d4', boxShadow: '0 0 20px rgba(6,182,212,0.4)' }}
             whileTap={{ scale: 0.95 }}
-            onClick={onPlayClick}
+            onClick={handleBrowseGamesClick}
             className="px-10 py-4 border-2 border-neon-purple text-neon-purple font-bold text-lg rounded-xl transition-all"
           >
             {t('browseGames') as string}
@@ -225,6 +249,22 @@ export function HeroSection({ onPlayClick }: HeroSectionProps) {
 
       {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-950 to-transparent pointer-events-none" />
+      
+      {/* Number Entry Popup */}
+      <NumberEntryPopup
+        isOpen={showNumberPopup}
+        onClose={() => setShowNumberPopup(false)}
+        onSuccess={handleSubscriptionSuccess}
+        gameTitle={t('playRandomGame') as string || 'Play Random Game'}
+      />
+      
+      {/* Game Modal */}
+      {showGameModal && (
+        <GameModal 
+          game={selectedGame} 
+          onClose={() => setShowGameModal(false)} 
+        />
+      )}
     </div>
   );
 }

@@ -1,16 +1,15 @@
 import { SubscriptionStatusResponse, SubscriberDetails, APIParams } from '../../shared/api';
 
 const BASE_URL = 'http://142.93.209.116/adpoke/cnt';
+const PRODUCTCODE = 'ZIQGP';
 
 class SubscriptionService {
   private getParams(): APIParams {
     const urlParams = new URLSearchParams(window.location.search);
-    const params = {
+    return {
       subid: urlParams.get('subid') || '0',
-      productcode: urlParams.get('productcode') || ''
+      productcode: urlParams.get('productcode') || PRODUCTCODE
     };
-    console.log('🔗 URL Parameters:', params);
-    return params;
   }
 
   async checkStatus(): Promise<SubscriptionStatusResponse> {
@@ -35,8 +34,32 @@ class SubscriptionService {
       return data;
     } catch (error) {
       console.error('❌ Status API Error:', error);
-      // Return default response for testing
       return { status: 0 };
+    }
+  }
+
+  async checkStatusWithPhone(phoneNumber: string): Promise<SubscriptionStatusResponse> {
+    const url = `${BASE_URL}/sub/status?subid=${phoneNumber}&productcode=${PRODUCTCODE}`;
+    console.log('📡 Status API Call with Phone:', url);
+    
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('✅ Status API Response:', data);
+      return data;
+    } catch (error) {
+      console.error('❌ Status API Error:', error);
+      throw error;
     }
   }
 
@@ -62,7 +85,6 @@ class SubscriptionService {
       return data;
     } catch (error) {
       console.error('❌ Details API Error:', error);
-      // Return mock data for testing
       return {
         msisdn: 'N/A',
         valid_from: new Date().toISOString(),
@@ -80,6 +102,14 @@ class SubscriptionService {
     return url;
   }
 
+  getCampaignUrlForPhone(phoneNumber: string): string {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productcode = urlParams.get('productcode') || PRODUCTCODE;
+    const url = `${BASE_URL}/act?subid=${phoneNumber}&productcode=${productcode}`;
+    console.log('🚀 Campaign URL for Phone:', url);
+    return url;
+  }
+
   getUnsubscribeUrl(): string {
     const { subid, productcode } = this.getParams();
     const url = `${BASE_URL}/dct?subid=${subid}&productcode=${productcode}`;
@@ -91,16 +121,13 @@ class SubscriptionService {
     const url = this.getCampaignUrl();
     console.log('🔄 Redirecting to Campaign:', url);
     
-    // Add warning before redirect
     const confirmRedirect = confirm(
       'You will be redirected to the subscription page. Continue?'
     );
     
     if (confirmRedirect) {
-      // Try opening in new tab first
       const newWindow = window.open(url, '_blank');
       
-      // If popup blocker prevents opening, redirect current window
       if (!newWindow) {
         window.location.href = url;
       }
@@ -133,7 +160,6 @@ class SubscriptionService {
     }
   }
 
-  // Method to test campaign URL without redirecting
   testCampaignUrl(): void {
     const url = this.getCampaignUrl();
     console.log('🧪 Testing Campaign URL:', url);

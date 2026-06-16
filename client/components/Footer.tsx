@@ -27,7 +27,7 @@ export function Footer() {
             />
           </div>
           <p className="text-white/60 text-sm text-center max-w-sm">
-            Premium gaming portal with 100+ amazing games for everyone.
+            {t('footerDesc') as string}
           </p>
         </motion.div>
 

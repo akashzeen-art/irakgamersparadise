@@ -5,6 +5,7 @@ import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { IoPlay } from 'react-icons/io5';
 import { FaStar } from 'react-icons/fa';
 import { GameModal } from './GameModal';
+import { NumberEntryPopup } from './NumberEntryPopup';
 import { useI18n, getGameTitle, getCategoryLabel } from '../lib/i18n';
 
 const featuredGames = GAMES.filter(g => g.featured);
@@ -12,10 +13,22 @@ const featuredGames = GAMES.filter(g => g.featured);
 export function FeaturedCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [showNumberPopup, setShowNumberPopup] = useState(false);
   const { t, lang } = useI18n();
 
   const goToPrevious = () => setCurrentIndex((prev) => (prev - 1 + featuredGames.length) % featuredGames.length);
   const goToNext = () => setCurrentIndex((prev) => (prev + 1) % featuredGames.length);
+
+  const handlePlayClick = () => {
+    console.log('🎮 Featured game play clicked:', currentGame.title);
+    setShowNumberPopup(true);
+  };
+
+  const handleSubscriptionSuccess = () => {
+    // User is subscribed - open the current featured game
+    console.log('✅ Opening featured game after subscription verification');
+    setShowModal(true);
+  };
 
   const currentGame = featuredGames[currentIndex];
 
@@ -125,7 +138,7 @@ export function FeaturedCarousel() {
               transition={{ delay: 0.5 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowModal(true)}
+              onClick={handlePlayClick}
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-neon-cyan to-neon-purple text-white font-bold text-lg rounded-xl flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:shadow-neon-cyan/50"
             >
               <IoPlay /> {t('playNow') as string}
@@ -154,6 +167,14 @@ export function FeaturedCarousel() {
         </div>
       </div>
     </section>
+
+      {/* Number Entry Popup */}
+      <NumberEntryPopup
+        isOpen={showNumberPopup}
+        onClose={() => setShowNumberPopup(false)}
+        onSuccess={handleSubscriptionSuccess}
+        gameTitle={getGameTitle(currentGame, lang)}
+      />
 
       {showModal && <GameModal game={currentGame} onClose={() => setShowModal(false)} />}
     </>

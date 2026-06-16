@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Gamers Paradise - SSH Server Deployment Script
+
+echo "🎮 Gamers Paradise - SSH Server Deployment"
+echo "=========================================="
+
+# Configuration
+SERVER_HOST="gamersparadise.fun"
+SERVER_USER="your-username"  # Replace with your SSH username
+SERVER_PATH="/path/to/gamersparadisirak"  # Replace with your server path
+LOCAL_BUILD_DIR="dist"
+
+# Build the project
+echo "🔨 Building project..."
+npm install
+npm run build
+
+if [ ! -d "$LOCAL_BUILD_DIR" ]; then
+    echo "❌ Build failed - dist directory not found"
+    exit 1
+fi
+
+echo "✅ Build completed successfully"
+
+# Upload files to server
+echo "📤 Uploading files to server..."
+rsync -avz --delete $LOCAL_BUILD_DIR/ $SERVER_USER@$SERVER_HOST:$SERVER_PATH/
+
+# Upload configuration files
+echo "📋 Uploading configuration files..."
+scp .htaccess $SERVER_USER@$SERVER_HOST:$SERVER_PATH/
+scp nginx.conf $SERVER_USER@$SERVER_HOST:$SERVER_PATH/
+
+# Set proper permissions on server
+echo "🔐 Setting permissions..."
+ssh $SERVER_USER@$SERVER_HOST "chmod -R 755 $SERVER_PATH && chown -R www-data:www-data $SERVER_PATH"
+
+echo "✅ Deployment completed!"
+echo "🌐 Your site should be live at: https://gamersparadise.fun"
+echo ""
+echo "📝 Next steps:"
+echo "1. Configure your web server (Apache/Nginx) to point to the deployed directory"
+echo "2. Set up SSL certificate for HTTPS"
+echo "3. Test the subscription APIs with real parameters"
