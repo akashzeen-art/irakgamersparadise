@@ -12,6 +12,7 @@ import { StatsSection } from '../components/StatsSection';
 import { NewsletterSection } from '../components/NewsletterSection';
 import { Footer } from '../components/Footer';
 import { AnimatedBackground } from '../components/AnimatedBackground';
+import { useSubscription } from '../hooks/useSubscription';
 
 export default function Index() {
   const [showPreloader, setShowPreloader] = useState(true);
@@ -19,6 +20,7 @@ export default function Index() {
   const navigate = useNavigate();
   const location = useLocation();
   const { lang } = useI18n();
+  useSubscription();
 
   const gamesRef = useRef<HTMLDivElement>(null);
   const categoriesRef = useRef<HTMLDivElement>(null);
@@ -41,7 +43,7 @@ export default function Index() {
         gamesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 50);
     } else if (name === 'Account') {
-      navigate(lang === 'ar' ? '/ar/account' : '/account');
+      navigate((lang === 'ar' ? '/ar/account' : '/account') + location.search);
     }
   };
 

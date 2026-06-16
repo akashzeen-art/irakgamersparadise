@@ -13,26 +13,13 @@ export function SubscriptionGuard({ children, fallback }: SubscriptionGuardProps
   const { t } = useI18n();
 
   useEffect(() => {
-    const checkSubscription = async () => {
-      try {
-        const status = await subscriptionService.checkStatus();
-        if (status.status === 1) {
-          setIsSubscribed(true);
-        } else {
-          setIsSubscribed(false);
-          // Redirect to campaign URL if not subscribed
-          subscriptionService.redirectToCampaign();
-        }
-      } catch (error) {
-        console.error('Subscription check failed:', error);
-        setIsSubscribed(false);
-        subscriptionService.redirectToCampaign();
-      } finally {
-        setIsLoading(false);
+    subscriptionService.initContentPage().then((result) => {
+      if (result.redirected) {
+        return;
       }
-    };
-
-    checkSubscription();
+      setIsSubscribed(result.subscribed);
+      setIsLoading(false);
+    });
   }, []);
 
   if (isLoading) {

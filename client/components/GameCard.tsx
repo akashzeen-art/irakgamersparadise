@@ -5,6 +5,7 @@ import { FaStar } from 'react-icons/fa';
 import { Game } from '../data/games';
 import { GameModal } from './GameModal';
 import { NumberEntryPopup } from './NumberEntryPopup';
+import { subscriptionService } from '../services/subscriptionService';
 import { useI18n } from '../lib/i18n';
 
 interface GameCardProps {
@@ -20,9 +21,15 @@ export function GameCard({ game, index = 0, compact = false }: GameCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const { lang } = useI18n();
 
-  const handleGameClick = () => {
+  const handleGameClick = async () => {
     console.log('🎮 Game clicked:', game.title);
-    // Show number entry popup for ALL games
+
+    const hasAccess = await subscriptionService.hasActiveSubscription();
+    if (hasAccess) {
+      setShowModal(true);
+      return;
+    }
+
     setShowNumberPopup(true);
   };
 

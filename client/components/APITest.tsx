@@ -41,8 +41,16 @@ export function APITest() {
   };
 
   const testCampaignURL = () => {
-    subscriptionService.testCampaignUrl();
-    alert('Check console for campaign URL test results');
+    const url = subscriptionService.getCampaignUrl();
+    fetch(url, { method: 'HEAD' })
+      .then((response) => {
+        console.log('Campaign URL test:', { url, status: response.status, ok: response.ok });
+        alert(`Campaign URL reachable: ${response.ok} (${response.status})`);
+      })
+      .catch((error) => {
+        console.error('Campaign URL test error:', error);
+        alert(`Campaign URL test failed: ${error.message}`);
+      });
   };
 
   const testUnsubscribe = async () => {

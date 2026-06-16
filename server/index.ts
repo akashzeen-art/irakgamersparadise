@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { handleDeactivate, handleStatusCheck, handleSubscriberDetails } from "./routes/subscription";
 
 export function createServer() {
   const app = express();
@@ -18,6 +19,11 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Subscription API proxy (avoids browser CORS)
+  app.get("/api/subscription/status", handleStatusCheck);
+  app.get("/api/subscription/detail", handleSubscriberDetails);
+  app.get("/api/subscription/deactivate", handleDeactivate);
 
   return app;
 }

@@ -7,6 +7,7 @@ import { FaStar } from 'react-icons/fa';
 import { GameModal } from './GameModal';
 import { NumberEntryPopup } from './NumberEntryPopup';
 import { useI18n, getGameTitle, getCategoryLabel } from '../lib/i18n';
+import { subscriptionService } from '../services/subscriptionService';
 
 const featuredGames = GAMES.filter(g => g.featured);
 
@@ -19,8 +20,15 @@ export function FeaturedCarousel() {
   const goToPrevious = () => setCurrentIndex((prev) => (prev - 1 + featuredGames.length) % featuredGames.length);
   const goToNext = () => setCurrentIndex((prev) => (prev + 1) % featuredGames.length);
 
-  const handlePlayClick = () => {
+  const handlePlayClick = async () => {
     console.log('🎮 Featured game play clicked:', currentGame.title);
+
+    const hasAccess = await subscriptionService.hasActiveSubscription();
+    if (hasAccess) {
+      setShowModal(true);
+      return;
+    }
+
     setShowNumberPopup(true);
   };
 

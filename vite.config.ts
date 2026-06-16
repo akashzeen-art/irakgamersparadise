@@ -12,6 +12,23 @@ export default defineConfig(({ mode }) => ({
       allow: ["./client", "./shared", "index.html"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
+    proxy: {
+      "/api/subscription/status": {
+        target: "http://142.93.209.116",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/subscription\/status/, "/adpoke/cnt/sub/status"),
+      },
+      "/api/subscription/detail": {
+        target: "http://142.93.209.116",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/subscription\/detail/, "/adpoke/cnt/sub/detail"),
+      },
+      "/api/subscription/deactivate": {
+        target: "http://142.93.209.116",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/subscription\/deactivate/, "/adpoke/cnt/dct"),
+      },
+    },
   },
   build: {
     outDir: "dist",

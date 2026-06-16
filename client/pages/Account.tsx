@@ -29,7 +29,6 @@ export function Account() {
     setIsUnsubscribing(true);
     try {
       await subscriptionService.unsubscribe();
-      // Refresh page after unsubscription
       window.location.reload();
     } catch (error) {
       console.error('Unsubscription failed:', error);
@@ -64,6 +63,8 @@ export function Account() {
       </motion.div>
     );
   }
+
+  const isSubscribed = subscriptionService.isAccountSubscribed(details);
 
   return (
     <motion.div
@@ -113,19 +114,19 @@ export function Account() {
 
             <div>
               <label className="block text-sm font-medium text-white/70 mb-2">{t('subscriptionStatus')}</label>
-              <div className={`rounded-lg p-3 ${details.status === '1' ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'}`}>
-                {details.status === '1' ? t('active') : t('inactive')}
+              <div className={`rounded-lg p-3 ${isSubscribed ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'}`}>
+                {isSubscribed ? t('active') : t('inactive')}
               </div>
             </div>
 
             <div className="pt-6 border-t border-slate-700">
-              {details.status === '1' ? (
+              {isSubscribed ? (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleUnsubscribe}
                   disabled={isUnsubscribing}
-                  className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+                  className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-orange-600/50 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
                 >
                   {isUnsubscribing ? t('unsubscribing') : t('unsubscribe')}
                 </motion.button>

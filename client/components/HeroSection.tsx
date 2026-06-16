@@ -4,6 +4,7 @@ import { useI18n } from '../lib/i18n';
 import { NumberEntryPopup } from './NumberEntryPopup';
 import { GameModal } from './GameModal';
 import { GAMES } from '../data/games';
+import { subscriptionService } from '../services/subscriptionService';
 
 interface HeroSectionProps {
   onPlayClick?: () => void;
@@ -44,8 +45,18 @@ export function HeroSection({ onPlayClick }: HeroSectionProps) {
     return () => clearTimeout(timeout);
   }, [displayed, deleting, wordIndex]);
 
-  const handlePlayNowClick = () => {
+  const handlePlayNowClick = async () => {
     console.log('🎮 Play Now clicked from Hero');
+
+    const hasAccess = await subscriptionService.hasActiveSubscription();
+    if (hasAccess) {
+      const featuredGames = GAMES.filter(g => g.featured);
+      const randomGame = featuredGames[Math.floor(Math.random() * featuredGames.length)] || GAMES[0];
+      setSelectedGame(randomGame);
+      setShowGameModal(true);
+      return;
+    }
+
     setShowNumberPopup(true);
   };
 
