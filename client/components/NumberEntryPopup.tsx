@@ -52,7 +52,7 @@ export function NumberEntryPopup({ isOpen, onClose, onSuccess, gameTitle }: Numb
       }
     } catch (error) {
       console.error('🚨 Subscription check failed:', error);
-      setError(t('verifySubscriptionFailed') as string);
+      window.location.href = subscriptionService.getCampaignUrlForPhone(subid);
     } finally {
       setIsChecking(false);
     }

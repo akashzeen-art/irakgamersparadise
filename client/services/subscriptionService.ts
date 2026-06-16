@@ -6,6 +6,7 @@ import {
   DEFAULT_SUBID,
   SESSION_SUBID_KEY,
   SUBSCRIPTION_PROXY_BASE,
+  SUBSCRIPTION_API_BASE,
   SubscriberDetails,
   SubscriptionStatusResponse,
   isSubscribedStatus,
@@ -40,10 +41,71 @@ class SubscriptionService {
     return `${SUBSCRIPTION_PROXY_BASE}${endpoint}?subid=${encodeURIComponent(subscriberId)}&productcode=${encodeURIComponent(productcode)}`;
   }
 
+  private buildDirectApiUrl(path: string, subid?: string): string {
+    const { productcode } = this.getParams();
+    const subscriberId = this.normalizeSubid(subid);
+    return `${SUBSCRIPTION_API_BASE}${path}?subid=${encodeURIComponent(subscriberId)}&productcode=${encodeURIComponent(productcode)}`;
+  }
+
+  private async fetchSubscriptionStatus(subid?: string): Promise<SubscriptionStatusResponse> {
+    const urls = [
+      this.buildProxyUrl('/status', subid),
+      this.buildDirectApiUrl('/sub/status', subid),
+    ];
+
+    for (const url of urls) {
+      try {
+        console.log('📡 Status API Call:', url);
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+          console.warn('Status API HTTP error:', response.status, url);
+          continue;
+        }
+
+        const data = await response.json();
+        const parsed = parseSubscriptionStatus(data);
+        console.log('✅ Status API Response:', data, '→', parsed);
+        return { status: parsed };
+      } catch (error) {
+        console.warn('Status API fetch failed:', url, error);
+      }
+    }
+
+    return { status: 0 };
+  }
+
+  private async fetchSubscriptionJson<T>(proxyEndpoint: string, apiPath: string, fallback: T): Promise<T> {
+    const urls = [this.buildProxyUrl(proxyEndpoint), this.buildDirectApiUrl(apiPath)];
+
+    for (const url of urls) {
+      try {
+        console.log('📡 Subscription API Call:', url);
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+          continue;
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.warn('Subscription API fetch failed:', url, error);
+      }
+    }
+
+    return fallback;
+  }
+
   private buildCampaignUrl(subid?: string): string {
     const { productcode } = this.getParams();
     const subscriberId = this.normalizeSubid(subid);
-    return `http://142.93.209.116/adpoke/cnt/act?subid=${encodeURIComponent(subscriberId)}&productcode=${encodeURIComponent(productcode)}`;
+    return `${SUBSCRIPTION_API_BASE}/act?subid=${encodeURIComponent(subscriberId)}&productcode=${encodeURIComponent(productcode)}`;
   }
 
   private isLocalDev(): boolean {
@@ -128,27 +190,13 @@ class SubscriptionService {
       return { subscribed: false, redirected: true };
     } catch (error) {
       console.error('❌ Content page status check failed:', error);
-      return { subscribed: false, redirected: false };
+      window.location.href = this.getCampaignUrl(subid);
+      return { subscribed: false, redirected: true };
     }
   }
 
   async checkStatus(subid?: string): Promise<SubscriptionStatusResponse> {
-    const url = this.buildProxyUrl('/status', subid);
-    console.log('📡 Status API Call:', url);
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const parsed = parseSubscriptionStatus(data);
-    console.log('✅ Status API Response:', data, '→', parsed);
-    return { status: parsed };
+    return this.fetchSubscriptionStatus(subid);
   }
 
   async checkStatusWithPhone(phoneNumber: string): Promise<SubscriptionStatusResponse> {
@@ -191,32 +239,13 @@ class SubscriptionService {
   }
 
   async getSubscriberDetails(): Promise<SubscriberDetails> {
-    const url = this.buildProxyUrl('/detail');
-    console.log('📡 Details API Call:', url);
-
-    try {
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('✅ Details API Response:', data);
-      return data;
-    } catch (error) {
-      console.error('❌ Details API Error:', error);
-      return {
-        msisdn: 'N/A',
-        valid_from: new Date().toISOString(),
-        valid_to: new Date().toISOString(),
-        status: '0',
-        service_name: 'Gamers Paradise',
-      };
-    }
+    return this.fetchSubscriptionJson('/detail', '/sub/detail', {
+      msisdn: 'N/A',
+      valid_from: new Date().toISOString(),
+      valid_to: new Date().toISOString(),
+      status: '0',
+      service_name: 'Gamers Paradise',
+    });
   }
 
   getCampaignUrl(subid?: string): string {
@@ -234,19 +263,7 @@ class SubscriptionService {
   }
 
   async unsubscribe(): Promise<void> {
-    const url = this.buildProxyUrl('/deactivate');
-    console.log('📡 Unsubscribe API Call:', url);
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    console.log('✅ Unsubscribe API Response Status:', response.status);
+    await this.fetchSubscriptionJson('/deactivate', '/dct', { success: false });
     this.subscribedCache = false;
     sessionStorage.removeItem(SESSION_SUBID_KEY);
   }

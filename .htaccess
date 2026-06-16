@@ -1,6 +1,11 @@
 RewriteEngine On
 RewriteBase /
 
+# Proxy subscription API to backend (requires mod_proxy + mod_proxy_http)
+RewriteRule ^api/subscription/status$ http://127.0.0.1/adpoke/cnt/sub/status [P,L,QSA]
+RewriteRule ^api/subscription/detail$ http://127.0.0.1/adpoke/cnt/sub/detail [P,L,QSA]
+RewriteRule ^api/subscription/deactivate$ http://127.0.0.1/adpoke/cnt/dct [P,L,QSA]
+
 # Handle Angular and React Router
 RewriteRule ^index\.html$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f

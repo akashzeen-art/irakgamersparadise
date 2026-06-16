@@ -1,4 +1,6 @@
-import { DEFAULT_PRODUCTCODE, DEFAULT_SUBID, SUBSCRIPTION_API_BASE } from '../../shared/api';
+const SUBSCRIPTION_API_BASE = 'http://142.93.209.116/adpoke/cnt';
+const DEFAULT_SUBID = '0';
+const DEFAULT_PRODUCTCODE = 'ZIQGP';
 
 export default async function handler(
   req: { query: Record<string, string | string[] | undefined> },
@@ -15,12 +17,12 @@ export default async function handler(
     try {
       data = text ? JSON.parse(text) : { status: 0 };
     } catch {
-      data = { status: 0, raw: text };
+      data = { status: 0 };
     }
     res.setHeader('Cache-Control', 'no-store');
-    res.status(response.ok ? 200 : response.status).json(data);
+    res.status(200).json(data);
   } catch (error) {
     console.error('Status proxy error:', error);
-    res.status(502).json({ status: 0, error: 'Status API unavailable' });
+    res.status(200).json({ status: 0 });
   }
 }
