@@ -6,16 +6,20 @@ export default async function handler(
   req: { query: Record<string, string | string[] | undefined> },
   res: { status: (code: number) => { json: (body: unknown) => void }; setHeader: (name: string, value: string) => void },
 ) {
-  const subid = String(req.query.subid ?? DEFAULT_SUBID);
+  const subid = String(req.query.subid ?? '');
+  const msisdn = String(req.query.msisdn ?? '');
   const productcode = String(req.query.productcode ?? DEFAULT_PRODUCTCODE);
-  const url = `${SUBSCRIPTION_API_BASE}/sub/detail?subid=${encodeURIComponent(subid)}&productcode=${encodeURIComponent(productcode)}`;
+  const lookup = msisdn
+    ? `msisdn=${encodeURIComponent(msisdn)}`
+    : `subid=${encodeURIComponent(subid || DEFAULT_SUBID)}`;
+  const url = `${SUBSCRIPTION_API_BASE}/sub/detail?${lookup}&productcode=${encodeURIComponent(productcode)}`;
 
   const fallback = {
     msisdn: 'N/A',
     valid_from: '',
     valid_to: '',
     status: '0',
-    service_name: 'Gamers Paradise',
+    service_name: 'Arabic Gamers Paradise',
   };
 
   try {

@@ -78,6 +78,8 @@ export const translations = {
     redirectingToSubscription: 'Redirecting to subscription...',
     loadingAccountDetails: 'Loading account details...',
     unableToLoadAccount: 'Unable to load account details',
+    accountMissingSubid: 'Open My Account from your subscription link',
+    accountMissingSubidHint: 'Use the link with your subid, e.g. ?subid=701493&productcode=ZIQGP',
     // Number Entry Popup
     enterPhoneNumber: 'Enter Phone Number',
     enterPhoneToPlay: 'Enter your phone number to play this game',
@@ -96,6 +98,8 @@ export const translations = {
     unableToVerifySubscription: 'Unable to verify subscription. Redirecting to subscription page...',
     languageEnglish: 'English',
     languageArabic: 'العربية',
+    language: 'Language',
+    logout: 'Logout',
     // Game categories (translated names shown in cards)
     topTenGames: 'Top 10 Games',
     allGames: 'All Games',
@@ -163,6 +167,8 @@ export const translations = {
     redirectingToSubscription: 'جارٍ التوجيه إلى صفحة الاشتراك...',
     loadingAccountDetails: 'جارٍ تحميل تفاصيل الحساب...',
     unableToLoadAccount: 'غير قادر على تحميل تفاصيل الحساب',
+    accountMissingSubid: 'افتح حسابي من رابط الاشتراك الخاص بك',
+    accountMissingSubidHint: 'استخدم الرابط مع subid، مثال: ?subid=701493&productcode=ZIQGP',
     // Number Entry Popup
     enterPhoneNumber: 'أدخل رقم الهاتف',
     enterPhoneToPlay: 'أدخل رقم هاتفك لتشغيل هذه اللعبة',
@@ -181,6 +187,8 @@ export const translations = {
     unableToVerifySubscription: 'تعذّر التحقق من الاشتراك. جارٍ التوجيه إلى صفحة الاشتراك...',
     languageEnglish: 'English',
     languageArabic: 'العربية',
+    language: 'اللغة',
+    logout: 'تسجيل الخروج',
     // Game categories (translated names shown in cards)
     topTenGames: 'أفضل 10 ألعاب',
     allGames: 'جميع الألعاب',

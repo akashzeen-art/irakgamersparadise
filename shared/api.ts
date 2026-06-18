@@ -14,13 +14,15 @@ export interface DemoResponse {
 /**
  * Gamers Paradise subscription API configuration
  */
-export const PORTAL_URL = 'http://gamerpardise.com/content/url';
-export const CONTENT_DOMAIN = 'http://gamerpardise.com';
-export const CONTENT_PORTAL_PATH = '/content/url';
+export const PORTAL_BASE = 'https://gamersparadise.fun';
+export const CONTENT_PORTAL_PATH = '/accounts/register';
+export const PORTAL_URL = `${PORTAL_BASE}${CONTENT_PORTAL_PATH}`;
+export const CONTENT_DOMAIN = PORTAL_BASE;
 export const SUBSCRIPTION_API_BASE = 'http://142.93.209.116/adpoke/cnt';
 export const SUBSCRIPTION_PROXY_BASE = '/api/subscription';
 export const DEFAULT_SUBID = '0';
 export const DEFAULT_PRODUCTCODE = 'ZIQGP';
+export const SERVICE_NAME = 'Arabic Gamers Paradise';
 export const SESSION_SUBID_KEY = 'gp_subid';
 
 export interface SubscriptionStatusResponse {
@@ -46,6 +48,20 @@ export function isSubscribedStatus(status: string | number | undefined): boolean
 
 export function parseSubscriptionStatus(data: { status?: string | number }): 0 | 1 {
   return isSubscribedStatus(data.status) ? 1 : 0;
+}
+
+/** Iraqi MSISDN for API — full international format (e.g. 9647883679202) */
+export function formatMsisdn(input: string): string {
+  let digits = input.replace(/\D/g, '').replace(/^0+/, '');
+  if (!digits.startsWith('964')) {
+    digits = `964${digits}`;
+  }
+  return digits;
+}
+
+export function looksLikeMsisdn(value: string): boolean {
+  const digits = value.replace(/\D/g, '');
+  return (digits.startsWith('964') && digits.length >= 12) || digits.length >= 9;
 }
 
 /** Iraqi MSISDN for API subid — local digits only (e.g. 7876143154) */

@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { DEFAULT_PRODUCTCODE, DEFAULT_SUBID, SUBSCRIPTION_API_BASE } from '../../shared/api';
 
-async function fetchSubscriptionApi(path: string, subid: string, productcode: string) {
-  const url = `${SUBSCRIPTION_API_BASE}${path}?subid=${encodeURIComponent(subid)}&productcode=${encodeURIComponent(productcode)}`;
+async function fetchSubscriptionApi(path: string, query: string) {
+  const url = `${SUBSCRIPTION_API_BASE}${path}?${query}`;
   console.log('📡 Proxy subscription request:', url);
 
   const response = await fetch(url, {
@@ -26,7 +26,10 @@ export const handleStatusCheck: RequestHandler = async (req, res) => {
   const productcode = String(req.query.productcode ?? DEFAULT_PRODUCTCODE);
 
   try {
-    const result = await fetchSubscriptionApi('/sub/status', subid, productcode);
+    const result = await fetchSubscriptionApi(
+      '/sub/status',
+      `subid=${encodeURIComponent(subid)}&productcode=${encodeURIComponent(productcode)}`,
+    );
     res.status(result.ok ? 200 : result.status).json(result.data);
   } catch (error) {
     console.error('❌ Status proxy error:', error);
@@ -35,11 +38,15 @@ export const handleStatusCheck: RequestHandler = async (req, res) => {
 };
 
 export const handleSubscriberDetails: RequestHandler = async (req, res) => {
-  const subid = String(req.query.subid ?? DEFAULT_SUBID);
+  const subid = String(req.query.subid ?? '');
+  const msisdn = String(req.query.msisdn ?? '');
   const productcode = String(req.query.productcode ?? DEFAULT_PRODUCTCODE);
+  const lookup = msisdn
+    ? `msisdn=${encodeURIComponent(msisdn)}&productcode=${encodeURIComponent(productcode)}`
+    : `subid=${encodeURIComponent(subid || DEFAULT_SUBID)}&productcode=${encodeURIComponent(productcode)}`;
 
   try {
-    const result = await fetchSubscriptionApi('/sub/detail', subid, productcode);
+    const result = await fetchSubscriptionApi('/sub/detail', lookup);
     res.status(result.ok ? 200 : result.status).json(result.data);
   } catch (error) {
     console.error('❌ Details proxy error:', error);
@@ -58,7 +65,10 @@ export const handleDeactivate: RequestHandler = async (req, res) => {
   const productcode = String(req.query.productcode ?? DEFAULT_PRODUCTCODE);
 
   try {
-    const result = await fetchSubscriptionApi('/dct', subid, productcode);
+    const result = await fetchSubscriptionApi(
+      '/dct',
+      `subid=${encodeURIComponent(subid)}&productcode=${encodeURIComponent(productcode)}`,
+    );
     res.status(result.ok ? 200 : result.status).json(result.data ?? { success: result.ok });
   } catch (error) {
     console.error('❌ Deactivate proxy error:', error);

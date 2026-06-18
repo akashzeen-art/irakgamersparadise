@@ -14,6 +14,11 @@ import { I18nProvider, Lang } from "./lib/i18n";
 
 const queryClient = new QueryClient();
 
+function PortalRedirect({ to }: { to: string }) {
+  const location = useLocation();
+  return <Navigate to={`${to}${location.search}`} replace />;
+}
+
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -39,9 +44,11 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<LangWrapper lang="en"><Index /></LangWrapper>} />
-          <Route path="/content/url" element={<LangWrapper lang="en"><Index /></LangWrapper>} />
+          <Route path="/accounts/register" element={<LangWrapper lang="en"><Index /></LangWrapper>} />
+          <Route path="/content/url" element={<PortalRedirect to="/accounts/register" />} />
           <Route path="/ar" element={<LangWrapper lang="ar"><Index /></LangWrapper>} />
-          <Route path="/ar/content/url" element={<LangWrapper lang="ar"><Index /></LangWrapper>} />
+          <Route path="/ar/accounts/register" element={<LangWrapper lang="ar"><Index /></LangWrapper>} />
+          <Route path="/ar/content/url" element={<PortalRedirect to="/ar/accounts/register" />} />
           <Route path="/account" element={<LangWrapper lang="en"><Account /></LangWrapper>} />
           <Route path="/ar/account" element={<LangWrapper lang="ar"><Account /></LangWrapper>} />
           <Route path="/game/:id" element={<Navigate to="/" replace />} />

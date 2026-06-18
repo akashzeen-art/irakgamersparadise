@@ -7,7 +7,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 export function Navbar({ onNavClick }: { onNavClick: (name: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showLangMenu, setShowLangMenu] = useState(false);
   const { t, lang, isRTL } = useI18n();
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,24 +20,16 @@ export function Navbar({ onNavClick }: { onNavClick: (name: string) => void }) {
   const switchLanguage = (newLang: 'en' | 'ar') => {
     const currentPath = location.pathname;
     const search = location.search;
-    
+
     if (newLang === 'ar') {
-      // Switch to Arabic
-      if (currentPath === '/') {
-        navigate('/ar' + search);
-      } else if (currentPath === '/account') {
-        navigate('/ar/account' + search);
-      } else if (!currentPath.startsWith('/ar')) {
-        navigate('/ar' + currentPath + search);
+      if (!currentPath.startsWith('/ar')) {
+        const arPath = currentPath === '/' ? '/ar' : `/ar${currentPath}`;
+        navigate(arPath + search);
       }
-    } else {
-      // Switch to English
-      if (currentPath.startsWith('/ar')) {
-        const newPath = currentPath.replace('/ar', '') || '/';
-        navigate(newPath + search);
-      }
+    } else if (currentPath.startsWith('/ar')) {
+      const newPath = currentPath.replace('/ar', '') || '/';
+      navigate(newPath + search);
     }
-    setShowLangMenu(false);
   };
 
   const menuItems = [
@@ -97,77 +88,35 @@ export function Navbar({ onNavClick }: { onNavClick: (name: string) => void }) {
             ))}
             
             {/* Language Selector */}
-            <div className="relative ml-2">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                onClick={() => setShowLangMenu(!showLangMenu)}
-                className="flex items-center gap-2 px-3 py-2 text-white/80 hover:text-white transition-colors"
-              >
+            <div className="relative ml-2 flex items-center gap-2 px-3 py-2 text-white/80">
                 <HiGlobeAlt className="text-lg" />
-                <span className="text-sm font-medium">{lang.toUpperCase()}</span>
-              </motion.button>
-              
-              {showLangMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute right-0 top-full mt-2 bg-slate-800/95 backdrop-blur-md border border-neon-purple/20 rounded-lg overflow-hidden z-50"
-                >
-                  <button
-                    onClick={() => switchLanguage('en')}
-                    className={`block w-full px-4 py-2 text-left hover:bg-slate-700/50 transition-colors ${
-                      lang === 'en' ? 'bg-neon-purple/20 text-neon-cyan' : 'text-white/80'
-                    }`}
-                  >
-                    {t('languageEnglish') as string}
-                  </button>
-                  <button
-                    onClick={() => switchLanguage('ar')}
-                    className={`block w-full px-4 py-2 text-left hover:bg-slate-700/50 transition-colors ${
-                      lang === 'ar' ? 'bg-neon-purple/20 text-neon-cyan' : 'text-white/80'
-                    }`}
-                  >
-                    {t('languageArabic') as string}
-                  </button>
-                </motion.div>
-              )}
+              <select
+                value={lang}
+                onChange={(e) => switchLanguage(e.target.value as 'en' | 'ar')}
+                className="bg-slate-800/95 border border-neon-purple/20 rounded-md px-2 py-1 text-sm text-white focus:outline-none focus:border-neon-cyan cursor-pointer"
+                aria-label={t('language') as string}
+              >
+                <option value="en">{t('languageEnglish') as string}</option>
+                <option value="ar">{t('languageArabic') as string}</option>
+              </select>
             </div>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
             {/* Mobile Language Selector */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              onClick={() => setShowLangMenu(!showLangMenu)}
-              className="text-white/80 hover:text-white transition-colors relative"
-            >
+            <motion.div whileHover={{ scale: 1.02 }} className="text-white/80 hover:text-white transition-colors relative flex items-center gap-2">
               <HiGlobeAlt className="text-xl" />
-              {showLangMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute right-0 top-full mt-2 bg-slate-800/95 backdrop-blur-md border border-neon-purple/20 rounded-lg overflow-hidden z-50"
-                >
-                  <button
-                    onClick={() => switchLanguage('en')}
-                    className={`block w-full px-4 py-2 text-left hover:bg-slate-700/50 transition-colors ${
-                      lang === 'en' ? 'bg-neon-purple/20 text-neon-cyan' : 'text-white/80'
-                    }`}
-                  >
-                    {t('languageEnglish') as string}
-                  </button>
-                  <button
-                    onClick={() => switchLanguage('ar')}
-                    className={`block w-full px-4 py-2 text-left hover:bg-slate-700/50 transition-colors ${
-                      lang === 'ar' ? 'bg-neon-purple/20 text-neon-cyan' : 'text-white/80'
-                    }`}
-                  >
-                    {t('languageArabic') as string}
-                  </button>
-                </motion.div>
-              )}
-            </motion.button>
+              <select
+                value={lang}
+                onChange={(e) => switchLanguage(e.target.value as 'en' | 'ar')}
+                className="bg-slate-800/95 border border-neon-purple/20 rounded-md px-2 py-1 text-sm text-white focus:outline-none focus:border-neon-cyan cursor-pointer"
+                aria-label={t('language') as string}
+              >
+                <option value="en">{t('languageEnglish') as string}</option>
+                <option value="ar">{t('languageArabic') as string}</option>
+              </select>
+            </motion.div>
             
             <button
               onClick={() => setIsOpen(!isOpen)}

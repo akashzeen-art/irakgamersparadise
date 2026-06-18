@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
 import { useI18n } from '../lib/i18n';
 import { subscriptionService } from '../services/subscriptionService';
-import { formatPhoneForSubid } from '../../shared/api';
+import { formatPhoneForSubid, formatMsisdn } from '../../shared/api';
 
 const COUNTRY_CODE = '964';
 
@@ -35,16 +35,15 @@ export function NumberEntryPopup({ isOpen, onClose, onSuccess, gameTitle }: Numb
     setError('');
 
     try {
-      const status = await subscriptionService.checkStatusWithPhone(subid);
+      const status = await subscriptionService.checkStatusWithPhone(phoneNumber);
       
       if (status.status === 1) {
         console.log('✅ Subscription verified - access granted');
         const { productcode } = subscriptionService.getParams();
-        const outcome = subscriptionService.handleActiveSubscription(subid, productcode);
-        if (outcome === 'granted') {
-          onSuccess();
-          onClose();
-        }
+        const msisdn = formatMsisdn(phoneNumber);
+        subscriptionService.grantGameAccess(msisdn, productcode);
+        onSuccess();
+        onClose();
         return;
       } else {
         console.log('❌ Not subscribed - redirecting to campaign');
