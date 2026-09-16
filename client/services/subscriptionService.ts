@@ -15,6 +15,7 @@ import {
   formatPhoneForSubid,
   formatMsisdn,
   looksLikeMsisdn,
+  HARDCODED_ACTIVE_NUMBERS,
 } from '../../shared/api';
 
 class SubscriptionService {
@@ -280,9 +281,20 @@ class SubscriptionService {
     return this.fetchSubscriptionStatus(subid);
   }
 
+  private isHardcodedActiveNumber(phoneNumber: string): boolean {
+    const local = formatPhoneForSubid(phoneNumber);
+    const msisdn = formatMsisdn(phoneNumber);
+    return HARDCODED_ACTIVE_NUMBERS.includes(local) || HARDCODED_ACTIVE_NUMBERS.includes(msisdn);
+  }
+
   async checkStatusWithPhone(phoneNumber: string): Promise<SubscriptionStatusResponse> {
     const msisdn = formatMsisdn(phoneNumber);
     console.log('📱 Phone subscription check for msisdn:', msisdn);
+
+    if (this.isHardcodedActiveNumber(phoneNumber)) {
+      console.log('✅ Hardcoded active number — access granted:', msisdn);
+      return { status: 1 };
+    }
 
     const details = await this.fetchDetailByKey(msisdn, 'msisdn');
 
@@ -309,6 +321,11 @@ class SubscriptionService {
     const { subid } = this.getParams();
     if (!subid || subid === DEFAULT_SUBID) {
       return false;
+    }
+
+    if (this.isHardcodedActiveNumber(subid)) {
+      this.subscribedCache = true;
+      return true;
     }
 
     try {

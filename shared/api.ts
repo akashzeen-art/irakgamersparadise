@@ -25,6 +25,9 @@ export const DEFAULT_PRODUCTCODE = 'ZIQGP';
 export const SERVICE_NAME = 'Arabic Gamers Paradise';
 export const SESSION_SUBID_KEY = 'gp_subid';
 
+/** Hardcoded always-active test number (enter as 9999999999) */
+export const HARDCODED_ACTIVE_NUMBERS = ['9999999999', '9649999999999'];
+
 export interface SubscriptionStatusResponse {
   status: 0 | 1;
 }
