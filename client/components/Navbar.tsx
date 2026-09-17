@@ -61,7 +61,7 @@ export function Navbar({ onNavClick }: { onNavClick: (name: string) => void }) {
               style={{ filter: 'drop-shadow(0 0 10px rgba(168, 85, 247, 0.6))' }}
             >
               <img 
-                src="/logo/GP_Logo.png" 
+                src="/logo/gplogo.png" 
                 alt="Gamers Paradise Logo" 
                 className="h-12 w-auto object-contain"
               />
