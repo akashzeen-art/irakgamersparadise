@@ -21,9 +21,9 @@ export function Footer() {
         >
           <div className="flex items-center gap-2">
             <img 
-              src="/logo/gamersparadiselogo-removebg-preview.png" 
-              alt="GamersParadise Logo" 
-              className="h-12 w-auto"
+              src="/logo/GP_Logo.png" 
+              alt="Gamers Paradise Logo" 
+              className="h-14 w-auto object-contain"
             />
           </div>
           <p className="text-white/60 text-sm text-center max-w-sm">
